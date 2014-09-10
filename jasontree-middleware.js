@@ -4,7 +4,7 @@
  *  Inspired by (and partially copied from) https://github.com/expressjs/serve-index
  */
 
-var jt = require('./jasontree.js');
+var jt = require('./jasontree-core.js');
 var http = require('http');
 
 exports = module.exports = function jasonTree(tree) {

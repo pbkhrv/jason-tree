@@ -1,12 +1,18 @@
 (function(exports) {
   var _ = require('lodash');
   var uuid = require('node-uuid');
+  var EventEmitter = require('events').EventEmitter;
 
   exports.tree = function(obj) {
     var tree = obj ? obj : {};
     return {
-      tree: tree
+      tree: tree,
+      eventEmitter: new EventEmitter()
     };
+  };
+
+  exports.on = function(treeObj, evtName, listener) {
+    return treeObj.eventEmitter.on(evtName, listener);
   };
 
   exports.get = function(treeObj, path) {
@@ -49,8 +55,10 @@
       path = pathElements(path);
     }
     var putOpPath = [];
-    treeObj.tree = putIntoTreeOnPath(treeObj.tree, path, putOpPath, value);
+    var tec = new TreeEventCollector('treeNodeCreated', treeObj.eventEmitter, treeObj);
+    treeObj.tree = putIntoTreeOnPath(treeObj.tree, path, putOpPath, value, tec.collect.bind(tec));
     treeObj.putOpPath = putOpPath.reverse();
+    tec.process(treeObj.doneNotifyingCb); // hack for testing ...
     return treeObj;
   };
 
@@ -58,22 +66,51 @@
     return treeObj.putOpPath;
   };
 
-  function putIntoTreeOnPath(container, path, putOpPath, value) {
+  function TreeEventCollector(evtName, eventEmitter, treeObj) {
+    var events = [];
+
+    this.collect = function(pathElements) {
+      events.push(_.clone(pathElements));
+    };
+
+    this.process = function(done) {
+      //console.log("notifying listeners");
+      setTimeout(function() {
+        notifyListeners();
+        if (done) {
+          done();
+        }
+      }, 1);
+    };
+
+    function notifyListeners() {
+      //console.log("TIMEOUT FIRED");
+      if (eventEmitter.listeners(evtName).length > 0) {
+        //console.log("got listeners");
+        _.each(events, function(evt) {
+          //console.log("emitting", evtName, evt);
+          eventEmitter.emit(evtName, evt);
+        });
+      }
+    };
+  };
+
+  function putIntoTreeOnPath(container, path, putOpPath, value, createdCb) {
     var key = _.head(path);
     if (path.length == 1) {
-      return putValueOnPathKey(container, key, value, putOpPath);
+      return putValueOnPathKey(container, key, value, putOpPath, createdCb);
     }
     else {
       var subContainer = getNextSubcontainerNode(container, key);
       if (subContainer) {
-        putIntoTreeOnPath(subContainer, _.tail(path), putOpPath, value);
+        putIntoTreeOnPath(subContainer, _.tail(path), putOpPath, value, createdCb);
         putOpPath.push(key);
         return container;
       }
       else {
         subContainer = createNextSubcontainerNode(container, path);
-        subContainer = putIntoTreeOnPath(subContainer, _.tail(path), putOpPath, value);
-        return putValueOnPathKey(container, key, subContainer, putOpPath);
+        subContainer = putIntoTreeOnPath(subContainer, _.tail(path), putOpPath, value, createdCb);
+        return putValueOnPathKey(container, key, subContainer, putOpPath, createdCb);
       }
     }
   };
@@ -102,10 +139,9 @@
     }
   };
 
-  function putValueOnPathKey(container, key, value, putOpPath) {
+  function putValueOnPathKey(container, key, value, putOpPath, createdCb) {
     if (_.isArray(container)) {
       if (key === '$$last$$') {
-        putOpPath.push(key);
         container.push(value);
       }
       else {
@@ -118,7 +154,6 @@
       }
       if (!container[key]) {
         container[key] = value;
-        putOpPath.push(key);
       }
       else {
         throw 'Cannot overwrite existing value. key:' + key;
@@ -127,7 +162,27 @@
     else {
       throw 'Cannot insert value into a non-container node ' + container;
     }
+
+    putOpPath.push(key);
+    createdCb(putOpPath);
+    recurseCreatedCb(value, createdCb, putOpPath);
+
     return container;
+  };
+
+  function recurseCreatedCb(value, createdCb, pathSoFar) {
+    if (_.isArray(value) && value.length > 0) {
+      var p = pathSoFar.concat("$$last$$");
+      createdCb(p);
+      recurseCreatedCb(value[value.length-1], createdCb, p);
+    }
+    else if (_.isObject(value)) {
+      _.forEach(_.keys(value), function(k) {
+        var p = pathSoFar.concat(k);
+        createdCb(p);
+        recurseCreatedCb(value[k], createdCb, p);
+      });
+    }
   };
 
   function pathElements(path) {

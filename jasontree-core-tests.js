@@ -224,3 +224,24 @@ describe('Array operations', function() {
   });
 });
 
+describe('Node creation events', function() {
+  beforeEach(function(done) {
+    var tree = jt.tree({
+      users: {
+        bobby: {
+        }
+      }
+    });
+    tree.doneNotifyingCb = done;
+
+    this.createdCallback = function(path) {};
+    spyOn(this, 'createdCallback');
+
+    jt.on(tree, 'treeNodeCreated', this.createdCallback);
+    jt.put(tree, '/users/bobby/firstName', 'Bob');
+  });
+
+  it('should call when a primitive is inserted', function() {
+    expect(this.createdCallback).toHaveBeenCalledWith(['users', 'bobby', 'firstName']);
+  });
+});
