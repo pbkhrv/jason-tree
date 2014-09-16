@@ -1,5 +1,5 @@
 var jt = require('./jasontree-core.js');
-var lodash = require('lodash');
+var _ = require('lodash');
 
 describe('Query data by path in the tree', function() {
   beforeEach(function() {
@@ -249,7 +249,7 @@ describe('Callback when new node is created', function() {
     jt.on(tree, 'put', '/users/$$anyKey$$', this.anyNewUserCb);
     jt.on(tree, 'put', '$$anyPath$$/lastName', this.anyLastNameCb);
 
-    tree.doneNotifyingCb = lodash.after(2, done);
+    tree.doneNotifyingCb = _.after(2, done);
 
     jt.put(tree, '/users/bobby/firstName', 'Bob');
     jt.put(tree, '/users/alice/lastName', 'Smith');
@@ -314,7 +314,7 @@ describe('Promise tied to new node creation', function() {
       this.firstNameCb(value);
     }.bind(this));
 
-    tree.doneNotifyingCb = lodash.after(2, done);
+    tree.doneNotifyingCb = _.after(2, done);
 
     jt.put(tree, '/users/$$uuid$$/firstName', 'Bob');
     jt.put(tree, '/users/$$uuid$$/firstName', 'Alice');
