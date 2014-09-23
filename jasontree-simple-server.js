@@ -18,6 +18,6 @@ app.use(bodyParser.json());
 app.use('/jasontree', jt(sampleData));
 
 var server = app.listen(3003, function() {
-  console.log('Simple JasonTree HTTP server at http://localhost:' + server.address().port + '/tree/');
+  console.log('Simple JasonTree HTTP server at http://localhost:' + server.address().port + '/jasontree/');
 });
 
