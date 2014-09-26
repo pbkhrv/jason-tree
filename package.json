@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/pbkhrv/jasontree.git"
+    "url": "http://github.com/pbkhrv/jason-tree.git"
   },
   "keywords": [
     "json",
@@ -28,9 +28,9 @@
     "backend"
   ],
   "author": "Peter Bakhirev <petro.b@gmail.com> (http://twitter.com/bakhirev)",
-  "license": "MIT",
+  "license": "GPL",
   "bugs": {
-    "url": "https://github.com/pbkhrv/jasontree/issues"
+    "url": "https://github.com/pbkhrv/jason-tree/issues"
   },
-  "homepage": "https://github.com/pbkhrv/jasontree"
+  "homepage": "https://github.com/pbkhrv/jason-tree"
 }
