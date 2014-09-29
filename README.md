@@ -24,7 +24,7 @@ Right out of the box, JasonTree allows you to PUT and GET values:
 < {"value": {"name": "Bob", "age": 40, "friends": [{"name": "Alice"}, {"name": "John"}]}}
 ```
 
-Data can be written to or retrieved from anywhere in the tree based on the path specified in the URL. PUT is used to insert new values into objects, while POST allows you to append to arrays:
+Data can be written to or retrieved from anywhere in the tree based on the path specified in the URL.
 
 ```
 > PUT /users/bobby
@@ -32,9 +32,6 @@ Data can be written to or retrieved from anywhere in the tree based on the path 
 
 > GET /users/bobby/age
 < {"value": 40}
-
-> POST /users/bobby/friends
-> {"value": {"name": "Sara"}}
 
 > GET /users/bobby/friends
 < {"value": [{"name": "Alice"}, {"name": "John"}, {"name": "Sara"}]}
@@ -49,7 +46,7 @@ Array indicies can be used as URL path elements:
 < {"value": "Alice"}
 ```
 
-## Tree nodes created on the fly
+## Tree nodes are created on the fly
 
 Non-existent tree nodes are created automatically when necessary:
 
@@ -63,6 +60,41 @@ Non-existent tree nodes are created automatically when necessary:
 > GET /users/john
 < {"value": {"name": "John"}}
 ```
+
+## RESTfully create new elements in collections
+
+Following the [RESTful web services convention](https://en.wikipedia.org/wiki/Representational_state_transfer#Applied_to_web_services) you can use HTTP POST to insert new values into arrays. If you are inserting an object, it'll automatically set the "id" property to the index in the array:
+
+```
+> GET /users
+< {"value": []}
+
+> POST /users
+> {"value": {"name": "John"}}
+< {"value": {"id": 0, "name": "John"}}
+
+> POST /users
+> {"value": {"name": "Bob"}}
+< {"value": {"id": 1, "name": "Bob"}}
+
+> GET /users/1
+< {"value": {"id": 1, "name": "Bob"}}
+
+You can also use POST to insert new values into objects, in which case JasonTree will generate a UUID and use it as a key:
+
+> GET /addresses
+< {"value": {}}
+
+> POST /addresses
+> {"value": {"street": "100 Main st"}}
+< {"value": {"id": "5D2F6DBE-5DF9-479D-9D03-34C74A48E9E3", "street": "100 Main st"}}
+
+> POST /addresses
+> {"value": {"street": "300 Nth ave"}}
+< {"value": {"id": "98EBCB9A-6BE2-4889-BE9E-BD6880C191DF", "street": "300 Nth ave"}}
+
+> GET /addresses
+< {"value": {"98EBCB9A-6BE2-4889-BE9E-BD6880C191DF": {"id": "98EBCB9A-6BE2-4889-BE9E-BD6880C191DF", "street": "300 Nth ave"}, "5D2F6DBE-5DF9-479D-9D03-34C74A48E9E3": {"id": "5D2F6DBE-5DF9-479D-9D03-34C74A48E9E3", "street": "100 Main st"}}}
 
 # Why?
 
