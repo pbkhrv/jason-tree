@@ -2,7 +2,7 @@
 
 # What is JasonTree?
 
-It is a JSON document store that makes it easy to rapidly prototype a web app without having to create a backend. It allows you store and retrieve data as JSON via a REST-like HTTP interface.
+It is a JSON document store that makes it easy to rapidly prototype a web app without having to create a backend. It allows you to store and retrieve data as JSON via a REST-like HTTP interface.
 
 It is an experiment. **Do not use this in production**.
 
@@ -10,7 +10,7 @@ It is an attempt to create a web application backend that favors convenience and
 
 It is an exploration of an idea. Not all of the features described in this README have been implemented yet.
 
-Conceptually, all of the data stored in JasonTree is represented as one large JSON document called a 'tree'. It can contain arbitrary objects, arrays and values (the use of those terms is consistent with the [http://json.org](JSON spec)). Different parts of the tree can be accessed using 'paths' that look like file system paths.
+Conceptually, all of the data stored in JasonTree is represented as one large JSON document called a 'tree'. It can contain arbitrary objects, arrays and values (the use of those terms is consistent with the [JSON spec](http://json.org)). Different parts of the tree can be accessed using 'paths' that look like file system paths.
 
 Let's jump right in and see what JasonTree can do.
 
@@ -19,7 +19,7 @@ Let's jump right in and see what JasonTree can do.
 
 ## Store and retrieve JSON values
 
-*Examples below use a simplified HTTP call notation for brevity. Strings starting with '>' refer to data being sent to the server. Strings starting with '<' depict data received from the server. To keep examples simple, we assume that the base URL is '/', but you can change that.*
+*Examples below use a simplified HTTP call notation for brevity. Strings starting with '>' refer to data being sent to the server. Strings starting with '<' depict data received from the server. To keep examples simple, we assume that the base URL is '/', but that can be adjusted as necessary.*
 
 Right out of the box, JasonTree allows you to PUT and GET values:
 
@@ -55,7 +55,7 @@ Array indicies can be used as URL path elements:
 
 ## Tree nodes are created on the fly
 
-Non-existent tree nodes are created automatically when necessary:
+Non-existent tree nodes are created automatically when data is inserted:
 
 ```
 > GET /users/john
@@ -109,7 +109,7 @@ You can also use POST to insert new values into objects, in which case JasonTree
 
 # How is the data stored?
 
-As of right now, all of the data resides in one process memory space, but if this idea survives and mature implementations arise, they can choose to store data in whatever way makes most sense from reliability/scalability/availability/performance perspective: in databases, on disk, sharded on different servers etc.
+As of right now, all of the data resides in one process memory space, but if this idea survives and mature implementations arise, they can choose to store data in whatever way makes most sense from reliability/scalability/availability/performance perspective: in a database, on disk, sharded on different servers etc.
 
 The tree data structure is implemented in JavaScript, is separate from the HTTP server and can be used by itself, even in the browser.
 
@@ -128,9 +128,9 @@ I'd like JasonTree to follow these best practices as much as possible:
 
 # The story behind JasonTree
 
-I was prototyping a couple of single-page web applications that needed to store and retrieve some data from the server. I was mostly interested in getting the UI to the point where it could be demo'ed and discussed. Keeping the data models clean and organized wasn't important, since the whole thing was meant to be thrown out and rewritten anyway. I wanted to keep the backend as light as possible, preferably without databases. I also wanted it to be hosted locally on my laptop, in order to be able to give demoes without an Internet connection.
+I was prototyping a couple of single-page web applications that needed to store and retrieve some data from the server. I was mostly interested in getting the UI to the point where it could be demo'ed and discussed. Keeping the data models clean and organized wasn't important, since the whole thing was meant to be thrown out and rewritten anyway. I wanted to keep the backend as light as possible, preferably without using a database. I also wanted it to be hosted locally on my laptop, in order to be able to give demoes without an Internet connection.
 
-Little by little, I arrived at the idea of storing all of my data in one large associative array on the server and accessing it via HTTP and JSON. It was simple to use and understand. That's how JasonTree was born. It is still highly experimental and I'd love to get your feedback and input.
+Little by little, I arrived at the idea of storing all of my data in one large associative array on the server and accessing it via HTTP and JSON. It was simple to use and understand. It allowed me to iterate quickly without committing to rigid data models or data access frameworks. That's how JasonTree was born. It is still highly experimental and I'd love to get your feedback and input.
 
 
 # Can it do X?
